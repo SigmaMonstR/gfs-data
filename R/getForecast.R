@@ -121,9 +121,5 @@ getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
   return(fcst)
 }
 
-#Get vintages available for given date 
-  
-  multi_series <- translateFields(c("snow","tmin","tmax", "quant_precip", "prob_precip"))
-  test <- getForecast(series = multi_series, yyyymmdd = "20100902", vintages = c(1, 13), milestone = "00")
-  
+
 

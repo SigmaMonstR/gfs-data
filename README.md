@@ -34,5 +34,19 @@ Fields are named based on the series name + reference hour (hours since) + time 
 getThreddsDir(yyyymmdd)
 ```
  
+## Example 
+Get series codes using `translateFields()`
+```{r}
+multi_series <- translateFields(c("snow","tmin","tmax", "quant_precip", "prob_precip"))
+```
+
+Now obtain a dataframe of forecasts produced on September 2, 2010 with a target of 0-hour on September 3
+```{r}
+test <- getForecast(series = multi_series, yyyymmdd = "20100902", vintages = c(1, 13), milestone = "00")
+```
+
+
+
+
 
 
