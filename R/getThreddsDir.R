@@ -13,11 +13,8 @@ getThreddsDir <- function(yyyymmdd){
   require("rvest")
   print(paste0("Accessing directory for ",yyyymmdd))
   url <- paste("https://www.ncei.noaa.gov/thredds/catalog/ndfd/file",substr(yyyymmdd,1,6), yyyymmdd,"catalog.html", sep = "/") 
-  thredds <- url %>%
-    html() %>%
-    html_nodes(xpath='/html/body/table') %>%
-    html_table()
-  sets <- thredds[[1]]$Dataset
+  thredds <- readLines(url)
+  sets <- regmatches(a,regexpr(paste0(codename,"_",yyyymmdd,"\\d{4}"),a))
   print(paste0("Directories found for ",yyyymmdd))
   return(sets)
 }

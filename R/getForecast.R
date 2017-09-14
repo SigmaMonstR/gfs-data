@@ -18,7 +18,8 @@ getForecast <- function(series, yyyymmdd, vintages = c(1, 13), milestone = "00")
   require(ncdf4)
   
   #Get subdirectories from Thredds server
-  folders <- getThreddsDir(yyyymmdd)
+  url <- paste("https://www.ncei.noaa.gov/thredds/catalog/ndfd/file",substr(yyyymmdd,1,6), yyyymmdd,"catalog.html", sep = "/") 
+  folders <- readLines(url)
   
   #############################
   #ITERATE THROUGH EACH SERIES#
@@ -48,10 +49,13 @@ getForecast <- function(series, yyyymmdd, vintages = c(1, 13), milestone = "00")
         seriesname <- series$name[i]
         varname <- as.character(series$variable[i])
         var_string <- paste0("?var=",varname)
-        series_24 <- grep(codename, folders, value = TRUE)
+        series_24 <- regmatches(folders,regexpr(paste0(codename,"_",yyyymmdd,"\\d{4}"),folders))
+        
+        #only progress if full series is found
+        if(length(series_24)==24){
+          
         part <-paste0(var_string, start_range, end_range)
         url <- paste0(root, "/", yyyymm, "/", yyyymmdd, "/", series_24[j], part)
-        
       
         #Download file and open Netcdf
         temp <- tempfile()
@@ -114,6 +118,7 @@ getForecast <- function(series, yyyymmdd, vintages = c(1, 13), milestone = "00")
           fcst <- cbind(fcst, df)
         } else {
           fcst <- merge(fcst, df, by = c("lon","lat","model_date"))
+        }
         }
       }
     }
