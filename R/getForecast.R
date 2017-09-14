@@ -44,18 +44,19 @@ getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
       for(j in vintages){
         
         #Set up API Call
-        print(paste0("Series = ",series$variable[i], " Vintage = ",j))
+        series_24 <- regmatches(folders,regexpr(paste0(codename,"_",yyyymmdd,"\\d{4}"),folders))
+        varname <- getVarName(series_24[j])
+        var_string <- paste0("?var=",varname)
+        print(paste0("Series = ",varname, " Vintage = ",j))
         codename <- as.character(series$code[i])
         seriesname <- series$name[i]
-        varname <- as.character(series$variable[i])
-        var_string <- paste0("?var=",varname)
-        series_24 <- regmatches(folders,regexpr(paste0(codename,"_",yyyymmdd,"\\d{4}"),folders))
         
         #only progress if full series is found
         if(length(series_24)>=24){
           
-        part <-paste0(var_string,"&north=50.1129&west=-130.1229&east=-60.8661&south=20.1786&disableLLSubset=on&disableProjSubset=on&horizStride=1&", start_range, end_range)
-        url <- paste0(root, "/", yyyymm, "/", yyyymmdd, "/", series_24[j], part)
+          
+          part <-paste0(var_string,"&north=50.1129&west=-130.1229&east=-60.8661&south=20.1786&disableLLSubset=on&disableProjSubset=on&horizStride=1&", start_range, end_range)
+          url <- paste0(root, "/", yyyymm, "/", yyyymmdd, "/", series_24[j], part)
       
         #Download file and open Netcdf
         temp <- tempfile()

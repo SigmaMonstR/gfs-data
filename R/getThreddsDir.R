@@ -10,11 +10,10 @@ getThreddsDir <- function(yyyymmdd){
   # Returns:
   #   vector of variable names
   #
-  require("rvest")
   print(paste0("Accessing directory for ",yyyymmdd))
   url <- paste("https://www.ncei.noaa.gov/thredds/catalog/ndfd/file",substr(yyyymmdd,1,6), yyyymmdd,"catalog.html", sep = "/") 
   thredds <- readLines(url)
-  sets <- regmatches(a,regexpr(paste0(codename,"_",yyyymmdd,"\\d{4}"),a))
+  sets <- regmatches(thredds,regexpr(paste0(codename,"_",yyyymmdd,"\\d{4}"),thredds))
   print(paste0("Directories found for ",yyyymmdd))
   return(sets)
 }
