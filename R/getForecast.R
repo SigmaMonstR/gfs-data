@@ -42,18 +42,21 @@ getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
     fcst <- as.data.frame(matrix(NA, nrow = 10000000, ncol = 0))
     for(i in 1:nrow(series)){
       for(j in vintages){
-        
-        #Set up API Call
+   
         series_24 <- regmatches(folders,regexpr(paste0(codename,"_",yyyymmdd,"\\d{4}"),folders))
-        varname <- getVarName(series_24[j])
-        var_string <- paste0("?var=",varname)
-        print(paste0("Series = ",varname, " Vintage = ",j))
         codename <- as.character(series$code[i])
         seriesname <- series$name[i]
+        print(paste0("Series = ",seriesname," - ", "Vintage = ",j))
+        
         
         #only progress if full series is found
-        if(length(series_24)>=24){
+        if(length(series_24)>=0){
           
+          #Set up API Call
+          
+          varname <- unlist(getVarName(series_24[j]))
+          print(varname)
+          var_string <- paste0("?var=",varname)
           
           part <-paste0(var_string,"&north=50.1129&west=-130.1229&east=-60.8661&south=20.1786&disableLLSubset=on&disableProjSubset=on&horizStride=1&", start_range, end_range)
           url <- paste0(root, "/", yyyymm, "/", yyyymmdd, "/", series_24[j], part)
