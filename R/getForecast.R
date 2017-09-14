@@ -43,9 +43,9 @@ getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
     for(i in 1:nrow(series)){
       for(j in vintages){
    
-        series_24 <- regmatches(folders,regexpr(paste0(codename,"_",yyyymmdd,"\\d{4}"),folders))
         codename <- as.character(series$code[i])
         seriesname <- series$name[i]
+        series_24 <- regmatches(folders,regexpr(paste0(codename,"_",yyyymmdd,"\\d{4}"),folders))
         print(paste0("Series = ",seriesname," - ", "Vintage = ",j))
         
         
