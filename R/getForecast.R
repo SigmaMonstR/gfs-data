@@ -1,4 +1,4 @@
-getForecast <- function(series, yyyymmdd, vintages = c(1, 13), milestone = "00"){
+getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
   #
   # 
   # Args:
@@ -52,7 +52,7 @@ getForecast <- function(series, yyyymmdd, vintages = c(1, 13), milestone = "00")
         series_24 <- regmatches(folders,regexpr(paste0(codename,"_",yyyymmdd,"\\d{4}"),folders))
         
         #only progress if full series is found
-        if(length(series_24)==24){
+        if(length(series_24)>=24){
           
         part <-paste0(var_string,"&north=50.1129&west=-130.1229&east=-60.8661&south=20.1786&disableLLSubset=on&disableProjSubset=on&horizStride=1&", start_range, end_range)
         url <- paste0(root, "/", yyyymm, "/", yyyymmdd, "/", series_24[j], part)
