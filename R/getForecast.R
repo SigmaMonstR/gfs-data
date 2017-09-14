@@ -1,4 +1,4 @@
-getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
+getForecast <- function(series, yyyymmdd, vintages = c(1, 13), milestone = "00"){
   #
   # 
   # Args:
