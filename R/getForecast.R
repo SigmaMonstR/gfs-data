@@ -95,12 +95,18 @@ getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
         df <- as.data.frame(as.matrix(expand.grid(lon_seq,lat_seq)))
         
         #convert to df
-        for(time_slice in 1:length(time)){
-          vec <- as.vector(var_array[,,time_slice])
+        if(length(time) >1){
+          for(time_slice in 1:length(time)){
+            vec <- as.vector(var_array[,,time_slice])
+            vec[is.na(vec)] <- NA
+            df <- cbind(df, vec)
+          }
+        } else {
+          vec <- as.vector(var_array)
           vec[is.na(vec)] <- NA
           df <- cbind(df, vec)
         }
-        
+          
         new_name <- paste0(seriesname,".",bench_hour,".", time)
         colnames(df) <- c("lon","lat",new_name)
         df$model_date <- yyyymmdd
