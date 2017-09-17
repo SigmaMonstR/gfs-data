@@ -16,9 +16,14 @@ getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
 
   #Open libraries
   require(ncdf4)
+  require(RCurl)
   
   #Get subdirectories from Thredds server
   url <- paste("https://www.ncei.noaa.gov/thredds/catalog/ndfd/file",substr(yyyymmdd,1,6), yyyymmdd,"catalog.html", sep = "/") 
+  
+  #Check to see if url exists
+  if(url.exists(url)){
+  
   folders <- readLines(url)
   
   #############################
@@ -30,12 +35,12 @@ getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
     month <- substr(yyyymmdd, 5,6)
     day <- substr(yyyymmdd, 7,8)
     startDate <- as.Date(paste(year, month, day,sep = "/"), "%Y/%m/%d")
-    endDate <- startDate + 2
+    endDate <- startDate + 1
     yyyymm <- paste0(year,month)
     
     #strings
     root <- "https://www.ncei.noaa.gov/thredds/ncss/ndfd/file"
-    start_range <- paste0("&disableLLSubset=on&disableProjSubset=on&horizStride=1&time_start=",startDate,"T06%3A00%3A00Z&")
+    start_range <- paste0("&disableLLSubset=on&disableProjSubset=on&horizStride=1&time_start=",startDate,"T00%3A00%3A00Z&")
     end_range <- paste0("time_end=",endDate,"T00%3A00%3A00Z&timeStride=1")
     
     ##variable strings
@@ -53,7 +58,6 @@ getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
         if(length(series_24)>=0){
           
           #Set up API Call
-          
           varname <- unlist(getVarName(series_24[j]))
           print(varname)
           var_string <- paste0("?var=",varname)
@@ -78,24 +82,6 @@ getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
         bench_hour <- format(bench_time, "%H")
         target_time <- strptime(paste0(as.character(startDate + 1),"T",milestone,":00:00Z"), tz = "UTC", "%Y-%m-%dT%H:%M:%SZ")
         
-        #Extract array that corresponds to the target time (target_time = time since bench_time + forecast period)
-        if(length(which(bench_time + time*60*60 == target_time)) ==0 ){
-          time_index <- min(which(bench_time + time*60*60 > target_time))
-          hours_since <- time[time_index]
-          target_time <- (bench_time + time*60*60)[time_index]
-        } else {
-          
-          #If meets criteria
-          time_index <- which(bench_time + time*60*60 == target_time)
-          hours_since <- time[time_index]
-          
-        }
-        
-        #Cut array
-        if(length(time) > 1){
-          var_array <- var_array[,,time_index]
-        }
-        
         
         #Get bounding box
         min_lat <- unlist(ncatt_get(out,0,"geospatial_lat_min")[2])
@@ -106,15 +92,18 @@ getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
         #Create grid in decimals
         lon_seq <- seq(min_lon, max_lon, (max_lon - min_lon)/(length(lon)-1))
         lat_seq <- seq(min_lat, max_lat, (max_lat - min_lat)/(length(lat)-1))
-        lonlat <- as.matrix(expand.grid(lon_seq,lat_seq))
+        df <- as.data.frame(as.matrix(expand.grid(lon_seq,lat_seq)))
         
         #convert to df
-        vec <- as.vector(var_array)
-        df <- data.frame(cbind(lonlat, vec))
-        new_name <- paste0(seriesname,".",bench_hour,".", hours_since)
+        for(time_slice in 1:length(time)){
+          vec <- as.vector(var_array[,,time_slice])
+          vec[is.na(vec)] <- NA
+          df <- cbind(df, vec)
+        }
+        
+        new_name <- paste0(seriesname,".",bench_hour,".", time)
         colnames(df) <- c("lon","lat",new_name)
         df$model_date <- yyyymmdd
-        df <- df[,c(1,2,4,3)]
         
         #Set up merge
         if(ncol(fcst) == 0){
@@ -128,6 +117,7 @@ getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
     }
    
   return(fcst)
+  }
 }
 
 

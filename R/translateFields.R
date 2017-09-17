@@ -17,6 +17,7 @@ translateFields <- function(data_set){
                   data.frame(a="prob_precip",b="YDUZ98_KWBN",b="Total_precipitation_surface_12_Hour_Accumulation_probability_above_0p254"), 
                   data.frame(a="wind_gust",b="YWUZ98_KWBN",b="Wind_speed_gust_surface"),
                   data.frame(a="wind_speed",b="YCUZ98_KWBN",b="Wind_speed_surface"),
+                  data.frame(a="ice",b="YZUZ98_KWBN",b="VAR0-1-227_FROM_8--9999--1_surface_Mixed_intervals_Accumulation"),
                   data.frame(a="rel_humidity",b="YRUZ98_KWBN",b="Relative_humidity_surface"),
                   data.frame(a="sig_wave_hgt",b="YKUZ98_KWBN",b="Significant_height_of_wind_waves_surface"),
                   data.frame(a="dew_point",b="YFUZ98_KWBN",b="Dewpoint_temperature_surface"))
