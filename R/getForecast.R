@@ -41,7 +41,7 @@ getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
     #strings
     root <- "https://www.ncei.noaa.gov/thredds/ncss/ndfd/file"
     start_range <- paste0("&disableLLSubset=on&disableProjSubset=on&horizStride=1&time_start=",startDate,"T00%3A00%3A00Z&")
-    end_range <- paste0("time_end=",endDate,"T00%3A00%3A00Z&timeStride=1&addLatLon=true")
+    end_range <- paste0("time_end=",endDate,"T12%3A00%3A00Z&timeStride=1&addLatLon=true")
     
     ##variable strings
     fcst <- as.data.frame(matrix(NA, nrow = 10000000, ncol = 0))
