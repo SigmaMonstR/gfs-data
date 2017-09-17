@@ -41,7 +41,7 @@ getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
     #strings
     root <- "https://www.ncei.noaa.gov/thredds/ncss/ndfd/file"
     start_range <- paste0("&disableLLSubset=on&disableProjSubset=on&horizStride=1&time_start=",startDate,"T00%3A00%3A00Z&")
-    end_range <- paste0("time_end=",endDate,"T00%3A00%3A00Z&timeStride=1")
+    end_range <- paste0("time_end=",endDate,"T00%3A00%3A00Z&timeStride=1&addLatLon=true")
     
     ##variable strings
     fcst <- as.data.frame(matrix(NA, nrow = 10000000, ncol = 0))
@@ -72,8 +72,8 @@ getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
       
         #Extract values
         var_array <- ncvar_get(out, varname)
-        lat <- ncvar_get(out,"y")
-        lon <- ncvar_get(out,"x")
+        lat <- ncvar_get(out,"lat")
+        lon <- ncvar_get(out,"lon")
         time <- ncvar_get(out,"time")
       
         #Target time 
@@ -83,16 +83,17 @@ getForecast <- function(series, yyyymmdd, vintages = c(1), milestone = "00"){
         target_time <- strptime(paste0(as.character(startDate + 1),"T",milestone,":00:00Z"), tz = "UTC", "%Y-%m-%dT%H:%M:%SZ")
         
         
-        #Get bounding box
-        min_lat <- unlist(ncatt_get(out,0,"geospatial_lat_min")[2])
-        max_lat <- unlist(ncatt_get(out,0,"geospatial_lat_max")[2])
-        min_lon <- unlist(ncatt_get(out,0,"geospatial_lon_min")[2])
-        max_lon <- unlist(ncatt_get(out,0,"geospatial_lon_max")[2])
+        # #Get bounding box
+        # min_lat <- unlist(ncatt_get(out,0,"geospatial_lat_min")[2])
+        # max_lat <- unlist(ncatt_get(out,0,"geospatial_lat_max")[2])
+        # min_lon <- unlist(ncatt_get(out,0,"geospatial_lon_min")[2])
+        # max_lon <- unlist(ncatt_get(out,0,"geospatial_lon_max")[2])
         
         #Create grid in decimals
-        lon_seq <- seq(min_lon, max_lon, (max_lon - min_lon)/(length(lon)-1))
-        lat_seq <- seq(min_lat, max_lat, (max_lat - min_lat)/(length(lat)-1))
-        df <- as.data.frame(as.matrix(expand.grid(lon_seq,lat_seq)))
+        # lon_seq <- seq(min_lon, max_lon, (max_lon - min_lon)/(length(lon)-1))
+        # lat_seq <- seq(min_lat, max_lat, (max_lat - min_lat)/(length(lat)-1))
+        
+        df <- data.frame(lat = as.vector(lat), lon = as.vector(lon))
         
         #convert to df
         if(length(time) >1){
